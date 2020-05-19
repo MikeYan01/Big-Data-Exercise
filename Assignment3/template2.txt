@@ -1,0 +1,48 @@
+Assignment 3 - Responses
+
+NETID: ly1333
+
+2-e) How many clusters are there?
+
+1455
+
+
+
+2-f) How many clusters are there?
+
+2299 (using n = 1). The reason why I choose n = 1 is that multiple similar aliases of one street can almost be aggregated into one cluster when n = 1. If using a larger n, the cluster result will be less accurate.
+
+
+
+2-g) Which fingerprint strategy works better for plate_id? How about for street_name? Explain.
+
+Fingerprint works better for plate_id, and N-Gram fingerprint works better for street_name. 
+
+For plate_id, most of the values are "formatted" 7-character strings which consist of only capital letters and digits. Moreover, each plate_id is supposed to be unique, so it will not resemble to another plate_id. Thus, fingerprint strategy is more suitable to generate clustering key for each plate. Besides, fingerprint strategy is easier and faster than N-Gram fingerprint strategy during the key generation. 
+
+For street_name, however, one certain street may have multiple aliases(eg. EAST 21 ST and EAST 21 ST ST). Different aliases may have different lengths and different regular fingerprints, but share the same 1-gram fingerprint because they use the same letters. In this case, N-Gram fingerprint strategy can find clusters that the fingerprint strategy didn't find, even with strings that have small differences.
+
+
+
+2-h) Clearly explain the transformations that you have chosen for street_name column. How many 
+     clusters do you have after applying these transformations? 
+
+1. Make everything capitalized. Each character is transformed to its uppercase.
+2. Filter out punctuations. All punctuations in the Python class string.punctuation is removed.
+3. Trim all leading and trailing space of each value.
+4. Collapse consecutive whitespace. Whitespace between words in each value will now at most be 1.
+
+I get 9 clusters after applying these transformations.
+
+
+
+2-i) Examine the clusters in 2.h and propose how to repair the data. Explain your recommendation.
+
+There are mainly two types of clusters left in 2.h:
+1. Some distinct entries in the clusters should be merged. For example, "WEST 91 ST" and "WEST 91 ST ST", "MAIN ST NY 10044" and "MAIN ST NY NY 10044"  probably indicate the same street. 
+2. Some distinct entries in the clusters are not clear. For example, "AVENUE 11" and "11 AVENUE" might indicate the same street or two different streets. The ambiguity here needs to be clarified by human later.
+
+Given the condition above, there are two ways to repair the data:
+1. Manually view all remaining clusters, check all value entries inside each cluster and decide whether each cluster should be merged. This method can reduce the number of clusters and make our data more accurate. We can refer to other information to help us decide. For example, querying 'violation_county' of two records can help us verify whether "AVENUE 11" and "11 AVENUE" indicates the same street. 
+
+2. We can try Nearest neighbor methods instead of Key collision based methods(Fingerprint, N-gram fingerprint, ...). Key collision methods can be either too strict or too lax with no way to fine tune allowable distance between strings. Nearest neighbor methods may overcome these disadvantages and offer a more accurate result.
